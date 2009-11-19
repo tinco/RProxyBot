@@ -1,6 +1,6 @@
 module RProxyBot
 	module Util
-		def parse(data, size, klass)
+		def self.parse(data, size, klass)
 			result = []
 			data.split(':').each_slice(size) do |s|
 				k = klass.new
@@ -10,7 +10,7 @@ module RProxyBot
 			result
 		end
 
-		def multi_parse(data,size, klass, hash=false)
+		def self.multi_parse(data,size, klass, hash=false)
 			result = hash ? {} : []
 			data.split(';').each do |d|
 				if hash

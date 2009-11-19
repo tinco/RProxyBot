@@ -1,6 +1,6 @@
 module RProxyBot
 	class UnitType < BasicEntity
-		def parse(data)
+		def self.parse(data)
 			Util.multi_parse(data, 26, UnitType, true)
 		end
 

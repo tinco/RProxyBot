@@ -4,7 +4,7 @@ module RProxyBot
 		properties :name, :width, :height, :data
 
 		#hier moet nog meer logic bij komen.
-		def parse(data)
+		def self.parse(data)
 			Util.parse(data,4, Map)
 		end
 	end

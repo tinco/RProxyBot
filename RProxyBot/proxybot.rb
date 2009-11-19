@@ -12,6 +12,7 @@ require 'upgrade_type.rb'
 
 module RProxyBot
 	class ProxyBot
+		include Singleton
 		attr_accessor :allow_user_control
 		attr_accessor :complete_information
 
@@ -56,32 +57,30 @@ module RProxyBot
 		end
 
 		def parse_players(data)
-			player, enemy = Player.parse(data)
+			self.player, self.enemy = Player.parse(data)
 		end
 
 		def parse_unit_types(data)
-			unit_types = UnitType.parse(data)
+			self.unit_types = UnitType.parse(data)
 		end
 
 		def parse_locations(data)
-			starting_locations = StartingLocation.parse(data)
+			self.starting_locations = StartingLocation.parse(data)
 		end
 
 		def parse_map(data)
-			map = Map.parse(data)
+			self.map = Map.parse(data)
 		end
 
 		def parse_tech_types(data)
-			tech_types = TechType.parse(data)
+			self.tech_types = TechType.parse(data)
 		end
 
 		def parse_upgrade_types(data)
-			upgrade_types = UpgradeType.parse(data)
+			self.upgrade_types = UpgradeType.parse(data)
 		end
 	end
 end
 
-p = RProxyBot::ProxyBot.new
+p = RProxyBot::ProxyBot.instance
 p.run("1","1")
-
-puts p.player.id
