@@ -1,6 +1,13 @@
-This is a client api for the Starcraft bot proxy found on http://eis.ucsc.edu/StarProxyBot.
+This is a client api for the Starcraft bot proxy found on http://eis.ucsc.edu/StarProxyBot
 
 It is not complete yet and has no tests yet so it might not work without error.
 
 Please contribute. I appreciate tests in rspec or cucumber :)
 
+#This is no longer relevant(just in case):
+Making Thrift work:
+Download the patched version of thrift here (or apply patches yourself):
+http://issues.apache.org/jira/browse/THRIFT-591?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel
+
+Then follow the instructions here (all the requirements can be enabled in cygwins online installer):
+http://wiki.apache.org/thrift/ThriftInstallationWin32
