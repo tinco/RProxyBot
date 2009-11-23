@@ -2,12 +2,10 @@ This is a client api for the Starcraft bot proxy found on http://eis.ucsc.edu/St
 
 It is not complete yet and has no tests yet so it might not work without error.
 
+At the moment I test it by launching irb, then typing require 'proxybot'. It will say "Waiting for client" now you launch starcraft with the clientmodule injected and start a game. When the game has started you will get back control in irb and you can get an instance of proxybot like this: p = RProxyBot::ProxyBot.instance
+
+Now you can do things like p.map.chokes or p.map.players[2].ally? or p.map.walkable?(20,23)
+
+At the moment StarCraft will crash after this because I immediately close the socket. 
+
 Please contribute. I appreciate tests in rspec or cucumber :)
-
-#This is no longer relevant(just in case):
-Making Thrift work:
-Download the patched version of thrift here (or apply patches yourself):
-http://issues.apache.org/jira/browse/THRIFT-591?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel
-
-Then follow the instructions here (all the requirements can be enabled in cygwins online installer):
-http://wiki.apache.org/thrift/ThriftInstallationWin32
