@@ -2,6 +2,8 @@ module RProxyBot
 	class Map < BasicEntity
 		properties :name, :width, :height, :build_data, :height_data, :walk_data
 
+    attr_accessor :chokes, :base_locations
+
 		def self.parse(data)
 			Util.parse(data, 6, Map, ':')[0]
 		end

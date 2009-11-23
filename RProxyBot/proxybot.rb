@@ -9,6 +9,8 @@ require 'locations.rb'
 require 'map.rb'
 require 'techtype.rb'
 require 'upgrade_type.rb'
+require 'choke.rb'
+require 'base.rb'
 
 module RProxyBot
 	class ProxyBot
@@ -58,6 +60,8 @@ module RProxyBot
 			#parse_unit_types(socket.gets)
 			parse_locations(socket.gets)
 			parse_map(socket.gets)
+      parse_chokes(socket.gets)
+      parse_base_locations(socket.gets)
 			#parse_tech_types(socket.gets)
 			#parse_upgrade_types(socket.gets)
 
@@ -90,6 +94,14 @@ module RProxyBot
 		def parse_upgrade_types(data)
 			self.upgrade_types = UpgradeType.parse(data)
 		end
+
+    def parse_chokes(data)
+      self.map.chokes = Choke.parse(data)
+    end
+
+    def parse_base_locations(data)
+      self.map.base_locations = BaseLocation.parse(data)
+    end
 	end
 end
 
