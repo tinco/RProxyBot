@@ -1,4 +1,4 @@
-This is a client api for the Starcraft bot proxy found on http://eis.ucsc.edu/StarProxyBot
+This is a client api for the Starcraft bot proxy found in the experimental branch of http://github.com/d-snp/bwapi-proxy 
 
 It is not complete yet and has no tests yet so it might not work without error.
 
