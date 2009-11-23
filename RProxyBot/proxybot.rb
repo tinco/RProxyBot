@@ -12,19 +12,24 @@ require 'upgrade_type.rb'
 
 module RProxyBot
 	class ProxyBot
-		include Singleton
-		attr_accessor :allow_user_control
-		attr_accessor :complete_information
+    include Singleton
+    attr_accessor :allow_user_control,
+      :complete_information,
+      :display_agent_commands,
+      :display_terrain_analysis
 
-		attr_accessor :map, :player, :enemy, :unit_types,
+		attr_accessor :map, :player, :players, :unit_types,
 			:starting_locations, :units, :tech_types,
 			:upgrade_types, :command_queue, :max_commands_per_message
 
-		def run(allow_user_control, complete_information)
-			self.allow_user_control = allow_user_control
-			self.complete_information = complete_information
-			run_server 13337
-			puts "done now :)"
+		def run(port, *settings)
+      @allow_user_control,
+      @complete_information,
+      @display_agent_commands,
+      @display_terrain_analysis = settings
+
+			run_server port
+			puts "Done running server!"
 		end
 
 		def run_server(port)
@@ -36,20 +41,25 @@ module RProxyBot
 			puts "Client accepted."
 
 			#The first thing it sends us is the player information:
-			ack, data = socket.gets.split(':', 2)
-			puts "bot says: #{ack}"
+			ack, data = socket.gets.split(';', 2)
+      puts "bot says: #{ack}"
+      player_id, data = data.split(':', 2)
+			puts "player id is: #{player_id}"
 
 			parse_players(data)
 
 			#We reply that with our cheat flags
-			socket.puts(allow_user_control + complete_information)
+			socket.puts(@allow_user_control +
+                  @complete_information +
+                  @display_agent_commands +
+                  @display_terrain_analysis)
 
 			#It continues with sending us data.
-			parse_unit_types(socket.gets)
+			#parse_unit_types(socket.gets)
 			parse_locations(socket.gets)
 			parse_map(socket.gets)
-			parse_tech_types(socket.gets)
-			parse_upgrade_types(socket.gets)
+			#parse_tech_types(socket.gets)
+			#parse_upgrade_types(socket.gets)
 
 			#clean up after ourselves
 			socket.close
@@ -57,7 +67,8 @@ module RProxyBot
 		end
 
 		def parse_players(data)
-			self.player, self.enemy = Player.parse(data)
+			self.players = Player.parse(data)
+      self.player = self.players[0]
 		end
 
 		def parse_unit_types(data)
@@ -83,4 +94,4 @@ module RProxyBot
 end
 
 p = RProxyBot::ProxyBot.instance
-p.run("1","1")
+p.run(12345,"1","1","1","1")

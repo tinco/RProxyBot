@@ -1,9 +1,9 @@
 module RProxyBot
 	class Player < BasicEntity
-		properties :id, :race
+		properties :id, :race, :name, :type, :ally?
 
 		def self.parse(data)
-			Util.parse(data, 2, Player)
+			Util.multi_parse(data, 5, Player)
 		end
 	end
 end

@@ -1,8 +1,8 @@
 module RProxyBot
 	module Util
-		def self.parse(data, size, klass)
+		def self.parse(data, size, klass, sep = ';')
 			result = []
-			data.split(':').each_slice(size) do |s|
+			data.split(sep).each_slice(size) do |s|
 				k = klass.new
 				k.initialize_properties(*s)
 				result << k
@@ -12,7 +12,7 @@ module RProxyBot
 
 		def self.multi_parse(data,size, klass, hash=false)
 			result = hash ? {} : []
-			data.split(';').each do |d|
+			data.split(':').each do |d|
 				if hash
 					p = parse(d, size, klass)
 					result[p.first.id] = p
@@ -55,7 +55,7 @@ module RProxyBot
 				define_method( :initialize_properties ) do |*args|
 					arr.each_with_index do |name, i|
 						value = args[i]
-						value = value.to_i unless (value =~ /^\d+$/).nil?
+						value = value.to_i if (value.length < 10) unless (value =~ /^\d+$/).nil?
 						name = name.to_s
 						if Util.is_a_question? name
 							name.chop! and value = value == 1
