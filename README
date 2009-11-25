@@ -2,9 +2,9 @@ This is a client api for the Starcraft bot proxy found in the experimental branc
 
 It is not complete yet and has no tests yet so it might not work without error.
 
-At the moment I test it by launching irb, then typing require 'proxybot'. It will say "Waiting for client" now you launch starcraft with the clientmodule injected and start a game. When the game has started you will get back control in irb and you can get an instance of proxybot like this: p = RProxyBot::ProxyBot.instance
+I now have a working stateless repl. You can run it by cd'ing to RProxyBot and then running: ruby proxybot.rb
 
-Now you can do things like p.map.chokes or p.map.players[2].ally? or p.map.walkable?(20,23)
+Now you can do things like ProxyBot.instance.map.chokes or ProxyBot.instance.map.players[2].ally? or p.map.walkable?(20,23)
 
 At the moment StarCraft will crash after this because I immediately close the socket. 
 
