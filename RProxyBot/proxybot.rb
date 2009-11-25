@@ -11,6 +11,7 @@ require 'techtype.rb'
 require 'upgrade_type.rb'
 require 'choke.rb'
 require 'base.rb'
+require 'unit.rb'
 
 module RProxyBot
 	class ProxyBot
@@ -22,7 +23,7 @@ module RProxyBot
 
 		attr_accessor :map, :player, :players, :unit_types,
 			:starting_locations, :units, :tech_types,
-			:upgrade_types, :command_queue, :max_commands_per_message
+			:upgrade_types, :command_queue, :max_commands_per_message, :frame
 
 		def run(port, *settings)
       @allow_user_control,
@@ -65,10 +66,33 @@ module RProxyBot
 			#parse_tech_types(socket.gets)
 			#parse_upgrade_types(socket.gets)
 
+      stopping = false
+      first_frame = true
+      while(not stopping)
+        stopping = !parse_update(socket.gets)
+        self.frame += 1
+        if first_frame
+          first_frame = false
+          #hier moeten we een thread maken die daarna
+          #coole dingen doet met de gamestate.
+        end
+      end
+
+      #we moeten ook de bot stoppen hier.
+
 			#clean up after ourselves
 			socket.close
 			server.close
 		end
+
+    def parse_update(data)
+      player_data, units_data = data.split(';')
+      #update player
+      player.update(player_data)
+      #update units
+      units ||= Units.new
+      units.update(units_data)
+    end
 
 		def parse_players(data)
 			self.players = Player.parse(data)
