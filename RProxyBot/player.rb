@@ -15,25 +15,29 @@ module RProxyBot
 		end
 
     #This is called every frame, updating the players current status.
-    def self.update(data)
-      u = Util.parse(data, 7, PlayerUpdate)
+    def update(data)
+      u = Util.parse(data, 7, PlayerUpdate).first
       self.status = u.status
       self.minerals = u.minerals
       self.gas = u.gas
       self.supply_used = u.supply_used
       self.supply_total = u.supply_total
 
-      u.research_data.chars.each_with_index do |status, index|
-        self.research[index] = status.to_i
+      unless u.research_data.nil?
+        u.research_data.chars.each_with_index do |status, index|
+          self.research[index] = status.to_i
+        end
       end
 
-      u.upgrade_data.chars.each_with_index do |status, index|
-        self.upgrades[index] = status.to_i
+      unless u.upgrade_data.nil?
+        u.upgrade_data.chars.each_with_index do |status, index|
+          self.upgrades[index] = status.to_i
+        end
       end
     end
+  end
 
-    class PlayerUpdate
-      properties :status, :minerals, :gas, :supply_used, :supply_total, :research_data, :upgrade_data
-    end
-	end
+  class PlayerUpdate < BasicEntity
+    properties :status, :minerals, :gas, :supply_used, :supply_total, :research_data, :upgrade_data
+  end
 end

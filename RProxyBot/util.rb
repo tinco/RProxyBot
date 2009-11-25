@@ -15,9 +15,9 @@ module RProxyBot
 			data.split(':').each do |d|
 				if hash
 					p = parse(d, size, klass)
-					result[p.first.id] = p
+					result[p.first.id] = p.first
 				else
-					result << parse(d, size, klass)
+					result << parse(d, size, klass).first
 				end
 			end
 			result

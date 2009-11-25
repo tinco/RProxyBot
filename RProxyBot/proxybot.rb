@@ -12,6 +12,7 @@ require 'upgrade_type.rb'
 require 'choke.rb'
 require 'base.rb'
 require 'unit.rb'
+require 'commandqueue.rb'
 
 module RProxyBot
 	class ProxyBot
@@ -21,7 +22,7 @@ module RProxyBot
       :display_agent_commands,
       :display_terrain_analysis
 
-		attr_accessor :map, :player, :players, :unit_types,
+		attr_accessor :player_id, :map, :player, :players, :unit_types,
 			:starting_locations, :units, :tech_types,
 			:upgrade_types, :command_queue, :max_commands_per_message, :frame
 
@@ -29,7 +30,8 @@ module RProxyBot
       @allow_user_control,
       @complete_information,
       @display_agent_commands,
-      @display_terrain_analysis = settings
+      @display_terrain_analysis,
+      @max_commands_per_message = settings
 
 			run_server port
 			puts "Done running server!"
@@ -47,6 +49,8 @@ module RProxyBot
 			ack, data = socket.gets.split(';', 2)
       puts "bot says: #{ack}"
       player_id, data = data.split(':', 2)
+      self.player_id = player_id.to_i
+
 			puts "player id is: #{player_id}"
 
 			parse_players(data)
@@ -58,23 +62,45 @@ module RProxyBot
                   @display_terrain_analysis)
 
 			#It continues with sending us data.
-			#parse_unit_types(socket.gets)
 			parse_locations(socket.gets)
 			parse_map(socket.gets)
       parse_chokes(socket.gets)
       parse_base_locations(socket.gets)
 			#parse_tech_types(socket.gets)
 			#parse_upgrade_types(socket.gets)
+			#parse_unit_types(socket.gets)
 
       stopping = false
       first_frame = true
       while(not stopping)
-        stopping = !parse_update(socket.gets)
-        self.frame += 1
-        if first_frame
-          first_frame = false
-          #hier moeten we een thread maken die daarna
-          #coole dingen doet met de gamestate.
+        if parse_update(socket.gets)
+          if self.frame.nil?
+            self.frame = 0
+            first_frame = false
+
+            self.command_queue = CommandQueue.new self.max_commands_per_message
+            #hier moeten we een thread maken die daarna
+            #coole dingen doet met de gamestate.
+            #Zoals een REPL:
+            Thread.new do
+              puts "Welcome in the interactive AI:"
+              while (not stopping)
+                '> '.display
+                e = gets
+                begin
+                  puts(eval(e))
+                rescue
+                  puts "oeps error"
+                end
+              end
+            end
+          end
+          self.frame += 1
+
+          #send our commands
+          socket.puts command_queue.fetch
+        else
+          stopping = true
         end
       end
 
@@ -86,17 +112,22 @@ module RProxyBot
 		end
 
     def parse_update(data)
-      player_data, units_data = data.split(';')
-      #update player
-      player.update(player_data)
-      #update units
-      units ||= Units.new
-      units.update(units_data)
+      if data.nil?
+        false
+      else
+        player_data, units_data = data.split(':')
+        #update player
+        self.player.update(player_data)
+        #update units
+        self.units ||= Units.new {}
+        self.units.update(units_data)
+        true
+      end
     end
 
-		def parse_players(data)
+    def parse_players(data)
 			self.players = Player.parse(data)
-      self.player = self.players[0]
+      self.player = self.players[self.player_id]
 		end
 
 		def parse_unit_types(data)
@@ -130,4 +161,4 @@ module RProxyBot
 end
 
 p = RProxyBot::ProxyBot.instance
-p.run(12345,"1","1","1","1")
+p.run(12345,"1","1","1","1", 20)

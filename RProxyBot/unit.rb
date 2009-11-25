@@ -10,7 +10,7 @@ module RProxyBot
   end
 
   class Units < Hash
-    def self.update(data)
+    def update(data)
       self.merge! Unit.parse(data)
     end
   end
