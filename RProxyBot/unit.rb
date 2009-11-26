@@ -5,13 +5,24 @@ module RProxyBot
       :addon_id, :mine_count, :velocity_x, :velocity_y
 
 		def self.parse(data)
-			Util.multi_parse(data, 19, Unit, true)
+			Util.multi_parse(data, 19, Unit, false)
 		end
   end
 
-  class Units < Hash
+  class Units
+    attr_accessor :units
+
     def update(data)
-      self.merge! Unit.parse(data)
+      units = Unit.parse(data)
+      @units = []
+      units.each do |u|
+        @units[u.player_id] ||= []
+        @units[u.player_id] << u
+      end
+    end
+
+    def [](i)
+      @units[i]
     end
   end
 end

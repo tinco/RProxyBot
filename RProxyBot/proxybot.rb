@@ -71,17 +71,14 @@ module RProxyBot
 			#parse_unit_types(socket.gets)
 
       stopping = false
-      first_frame = true
+      @command_queue = CommandQueue.new self.max_commands_per_message
+      @frame = 0
       while(not stopping)
         if parse_update(socket.gets)
-          if self.frame.nil?
-            self.frame = 0
-            first_frame = false
-
-            self.command_queue = CommandQueue.new self.max_commands_per_message
-            #hier moeten we een thread maken die daarna
-            #coole dingen doet met de gamestate.
-            #Zoals een REPL:
+          #hier moeten we een thread maken die daarna
+          #coole dingen doet met de gamestate.
+          #Zoals een REPL:
+          if @frame == 0
             Thread.new do
               puts "Welcome in the interactive AI:"
               while (not stopping)
@@ -106,10 +103,10 @@ module RProxyBot
 
       #we moeten ook de bot stoppen hier.
 
-			#clean up after ourselves
-			socket.close
-			server.close
-		end
+      #clean up after ourselves
+      socket.close
+      server.close
+    end
 
     def parse_update(data)
       if data.nil?
@@ -117,45 +114,48 @@ module RProxyBot
       else
         player_data, units_data = data.split(':', 2)
         #update player
-        self.player.update(player_data)
+        @player.update(player_data)
         #update units
-        self.units ||= Units.new {}
-        self.units.update(units_data)
+        @units ||= Units.new
+        @units.update(units_data)
+        @players.each do |p|
+          p.update_units(@units[p.id]) unless @units[p.id].nil?
+        end
         true
       end
     end
 
     def parse_players(data)
-			self.players = Player.parse(data)
-      self.player = self.players[self.player_id]
+			@players = Player.parse(data)
+      @player = @players[@player_id]
 		end
 
 		def parse_unit_types(data)
-			self.unit_types = UnitType.parse(data)
+			@unit_types = UnitType.parse(data)
 		end
 
 		def parse_locations(data)
-			self.starting_locations = StartingLocation.parse(data)
+			@starting_locations = StartingLocation.parse(data)
 		end
 
 		def parse_map(data)
-			self.map = Map.parse(data)
+			@map = Map.parse(data)
 		end
 
 		def parse_tech_types(data)
-			self.tech_types = TechType.parse(data)
+			@tech_types = TechType.parse(data)
 		end
 
 		def parse_upgrade_types(data)
-			self.upgrade_types = UpgradeType.parse(data)
+			@upgrade_types = UpgradeType.parse(data)
 		end
 
     def parse_chokes(data)
-      self.map.chokes = Choke.parse(data)
+      @map.chokes = Choke.parse(data)
     end
 
     def parse_base_locations(data)
-      self.map.base_locations = BaseLocation.parse(data)
+      @map.base_locations = BaseLocation.parse(data)
     end
 	end
 end
