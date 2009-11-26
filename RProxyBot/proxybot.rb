@@ -88,7 +88,7 @@ module RProxyBot
                 '> '.display
                 e = gets
                 begin
-                  puts(eval(e))
+                  puts(eval(e,binding))
                 rescue
                   puts "oeps error"
                 end
@@ -115,7 +115,7 @@ module RProxyBot
       if data.nil?
         false
       else
-        player_data, units_data = data.split(':')
+        player_data, units_data = data.split(':', 2)
         #update player
         self.player.update(player_data)
         #update units

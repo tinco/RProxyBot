@@ -4,7 +4,7 @@ It is not complete yet and has no tests yet so it might not work without error.
 
 I now have a working stateless repl. You can run it by cd'ing to RProxyBot and then running: ruby proxybot.rb
 
-Now you can do things like ProxyBot.instance.map.chokes or ProxyBot.instance.map.players[2].ally? or p.map.walkable?(20,23)
+Now you can do things like map.chokes or map.players[2].ally? or map.walkable?(20,23) or player.minerals
 
 At the moment StarCraft will crash after this because I immediately close the socket. 
 
