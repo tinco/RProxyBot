@@ -23,15 +23,15 @@ module RProxyBot
 			result
 		end
 
-		def Util.is_a_question?(string)
+		def self.is_a_question?(string)
 			return string[string.length() -1] == '?'
 		end
 	end
+
 	# Dwemthy's Creature style entity, from _why's book "The poignant guide to Ruby", slightly
 	# modified to fit the mood.
+  # This should be a module and merged with Type (and perhaps util :P)
 	class BasicEntity
-		# Advanced metaprogramming code for nice, clean properties
-
 		def self.properties( *arr )
 			# 1. Set up accessors for each variable
 			arr.each do |name|
@@ -65,5 +65,16 @@ module RProxyBot
 				end
 			end
 		end
-	end
+
+    #Defines a getter for each method fetching the data from its constant type array.
+    def self.type_properties( *arr )
+      arr.each_with_index do |name, index|
+        class_eval do
+          define_method(name) do
+            const_get("#{self.class.name}Types::TypeData")[@type_id][index]
+          end
+        end
+      end
+    end
+  end
 end
