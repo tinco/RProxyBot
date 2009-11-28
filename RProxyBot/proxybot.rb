@@ -4,6 +4,7 @@ require 'singleton'
 ## RProxybot requires
 require 'util.rb'
 require 'constants.rb'
+require 'typedata.rb'
 require 'player.rb'
 require 'locations.rb'
 require 'map.rb'

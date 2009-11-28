@@ -2,11 +2,11 @@ module RProxyBot
   class Unit < BasicEntity
     include Constants
 
-    properties :id, :player_id, :type_id, :x, :y, :hitpoints, :shields, :enery, :build_timer,
+    properties :id, :player_id, :type, :x, :y, :hitpoints, :shields, :enery, :build_timer,
       :train_timer, :research_timer, :upgrade_timer, :order_timer, :order, :resources,
       :addon_id, :mine_count, :velocity_x, :velocity_y
 
-    type_properties :type, :name, :rank, :race, :what_builds, :what_Builds_amount, :required_unit1,
+    type_properties :name, :rank, :race, :what_builds, :what_Builds_amount, :required_unit1,
       :required_unit1_amount, :required_unit2, :required_unit2_amount, :required_unit3, :required_unit3_amount,
       :required_tech, :ability1, :ability2, :ability3, :ability4, :armor_upgrade, :max_hit_points,
       :max_shields, :max_energy, :armor, :mineral_cost, :gas_cost, :build_time, :supply_required,

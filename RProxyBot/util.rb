@@ -71,7 +71,9 @@ module RProxyBot
       arr.each_with_index do |name, index|
         class_eval do
           define_method(name) do
-            const_get("#{self.class.name}Types::TypeData")[@type_id][index]
+            result = RProxyBot::Constants.const_get("UnitTypes").const_get(:TypeData)[@type][index]
+            result = (result == 1) if Util.is_a_question? name
+            result
           end
         end
       end
