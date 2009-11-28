@@ -96,7 +96,7 @@ module RProxyBot
           self.frame += 1
 
           #send our commands
-          socket.puts command_queue.fetch
+          socket.puts @command_queue.fetch
         else
           stopping = true
         end
