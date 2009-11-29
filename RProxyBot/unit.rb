@@ -8,7 +8,7 @@ module RProxyBot
 
     type_properties :name, :rank, :race, :what_builds, :what_builds_amount, :required_unit1,
       :required_unit1_amount, :required_unit2, :required_unit2_amount, :required_unit3, :required_unit3_amount,
-      :required_tech, :ability1, :ability2, :ability3, :ability4, :armor_upgrade, :max_hit_points,
+      :required_tech, :ability1, :ability2, :ability3, :ability4, :armor_upgrade, :max_hitpoints,
       :max_shields, :max_energy, :armor, :mineral_cost, :gas_cost, :build_time, :supply_required,
       :supply_provided, :space_required, :space_provided, :build_score, :destroy_score, :unit_size_type,
       :tile_width, :tile_height, :dimension_left, :dimension_up, :dimension_right, :dimension_down, :seek_range,
@@ -23,18 +23,14 @@ module RProxyBot
 			Util.multi_parse(data, 19, Unit, false)
 		end
 
-    def command(command)
-      CommandQueue.instance.push(command)
+    def right_click_unit(target)
+      CommandQueue.push(4, @id, target.id)
     end
 
-    def right_click_unit(target)
-      command = []
-      command[0] = 4
-      command[1] = @id
-      command[2] = target.id
-      command[3] = 0
-      command[4] = 0
-      self.command(command)
+    def distance_to(unit)
+      a = (unit.x - self.x).abs
+      b = (unit.y - self.y).abs
+      c = Math.sqrt(a ** 2 + b ** 2)
     end
   end
 

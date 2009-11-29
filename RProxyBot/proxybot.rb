@@ -14,6 +14,8 @@ require 'choke.rb'
 require 'base.rb'
 require 'unit.rb'
 require 'commandqueue.rb'
+require 'repl_ai.rb'
+require 'basic_ai.rb'
 
 module RProxyBot
 	class ProxyBot
@@ -84,20 +86,8 @@ module RProxyBot
           #coole dingen doet met de gamestate.
           #Zoals een REPL:
           if @frame == 0
-            Thread.new do
-              puts "Welcome in the interactive AI:"
-              @temp1 = []
-              @temp2 = []
-              while (not @stopping)
-                '> '.display
-                e = gets
-                begin
-                  puts(eval(e,binding))
-                rescue
-                  puts "oeps error"
-                end
-              end
-            end
+            REPL.start
+            BasicAI.start
           end
           self.frame += 1
 

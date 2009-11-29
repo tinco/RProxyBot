@@ -3,8 +3,14 @@ class CommandQueue < Queue
 
   attr_accessor :max_commands
 
-  def push(command)
+  def push(*command)
+    command.fill(0, (command.length)..4)
     super(command.join(';'))
+  end
+
+  #Is this how singleton works?
+  def self.push(*command)
+    instance.push(*command)
   end
 
   def fetch
