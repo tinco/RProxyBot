@@ -6,7 +6,7 @@ module RProxyBot
       :train_timer, :research_timer, :upgrade_timer, :order_timer, :order, :resources,
       :addon_id, :mine_count, :velocity_x, :velocity_y
 
-    type_properties :name, :rank, :race, :what_builds, :what_Builds_amount, :required_unit1,
+    type_properties :name, :rank, :race, :what_builds, :what_builds_amount, :required_unit1,
       :required_unit1_amount, :required_unit2, :required_unit2_amount, :required_unit3, :required_unit3_amount,
       :required_tech, :ability1, :ability2, :ability3, :ability4, :armor_upgrade, :max_hit_points,
       :max_shields, :max_energy, :armor, :mineral_cost, :gas_cost, :build_time, :supply_required,
@@ -22,22 +22,48 @@ module RProxyBot
 		def self.parse(data)
 			Util.multi_parse(data, 19, Unit, false)
 		end
+
+    def command(command)
+      CommandQueue.instance.push(command)
+    end
+
+    def right_click_unit(target)
+      command = []
+      command[0] = 4
+      command[1] = @id
+      command[2] = target.id
+      command[3] = 0
+      command[4] = 0
+      self.command(command)
+    end
   end
 
   class Units
-    attr_accessor :units
+    attr_accessor :players
+
+    def minerals
+      @players.last.values.select do |u|
+        u.type == Constants::UnitTypes::ResourceMineralField
+      end
+    end
+
+    def vespene_geysers
+      @players.last.values.select do |u|
+        u.type == Constants::UnitTypes::ResourceVespeneGeyser
+      end
+    end
 
     def update(data)
       units = Unit.parse(data)
-      @units = []
+      @players = []
       units.each do |u|
-        @units[u.player_id] ||= []
-        @units[u.player_id] << u
+        @players[u.player_id] ||= {}
+        @players[u.player_id].merge!(u.id => u)
       end
     end
 
     def [](i)
-      @units[i]
+      @players[i]
     end
   end
 end

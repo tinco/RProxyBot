@@ -11,6 +11,18 @@ module RProxyBot
       self.upgrades = []
     end
 
+    def command_centers
+      units.values.select do |unit|
+        unit.is_resource_depot?
+      end
+    end
+
+    def workers
+      units.values.select do |unit|
+        unit.is_worker?
+      end
+    end
+
 		def self.parse(data)
 			Util.multi_parse(data, 5, Player)
 		end
@@ -38,10 +50,7 @@ module RProxyBot
     end
 
     def update_units(units)
-      #Makes a hash out of the units:
-      @units = Hash[*units.collect { |u|
-        [u.id, u]
-      }.flatten]
+      @units = units
     end
   end
 

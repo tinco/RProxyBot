@@ -25,7 +25,8 @@ module RProxyBot
 
 		attr_accessor :player_id, :map, :player, :players, :unit_types,
 			:starting_locations, :units, :tech_types,
-			:upgrade_types, :command_queue, :max_commands_per_message, :frame
+			:upgrade_types, :command_queue, :max_commands_per_message, :frame,
+      :stopping
 
 		def run(port, *settings)
       @allow_user_control,
@@ -71,10 +72,13 @@ module RProxyBot
 			#parse_upgrade_types(socket.gets)
 			#parse_unit_types(socket.gets)
 
-      stopping = false
-      @command_queue = CommandQueue.new self.max_commands_per_message
+      #TODO this is ugly, we're storing max_commands in two places, should only be CommandQueue
+      @command_queue = CommandQueue.instance
+      @command_queue.max_commands = @max_commands_per_message
       @frame = 0
-      while(not stopping)
+
+      @stopping = false
+      while(not @stopping)
         if parse_update(socket.gets)
           #hier moeten we een thread maken die daarna
           #coole dingen doet met de gamestate.
@@ -82,7 +86,9 @@ module RProxyBot
           if @frame == 0
             Thread.new do
               puts "Welcome in the interactive AI:"
-              while (not stopping)
+              @temp1 = []
+              @temp2 = []
+              while (not @stopping)
                 '> '.display
                 e = gets
                 begin
