@@ -100,7 +100,7 @@ module RProxyBot
             end
             BasicAI.start
           end
-          self.frame += 1
+          @frame += 1
 
           #send our commands
           socket.puts @command_queue.fetch
