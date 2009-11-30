@@ -2,7 +2,7 @@ module RProxyBot
   class Unit < BasicEntity
     include Constants
 
-    properties :id, :player_id, :type, :x, :y, :hitpoints, :shields, :enery, :build_timer,
+    properties :id, :player_id, :type, :x, :y, :hitpoints, :shields, :energy, :build_timer,
       :train_timer, :research_timer, :upgrade_timer, :order_timer, :order, :resources,
       :addon_id, :mine_count, :velocity_x, :velocity_y
 
@@ -25,6 +25,10 @@ module RProxyBot
 
     def right_click_unit(target)
       CommandQueue.push(4, @id, target.id)
+    end
+
+    def train_unit(unit_type)
+      CommandQueue.push(5, @id, unit_type)
     end
 
     def distance_to(unit)

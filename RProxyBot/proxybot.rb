@@ -86,7 +86,18 @@ module RProxyBot
           #coole dingen doet met de gamestate.
           #Zoals een REPL:
           if @frame == 0
-            REPL.start
+            Thread.new do
+              puts "Welcome in the interactive AI:"
+              while (not @stopping)
+                '> '.display
+                e = gets
+                begin
+                  puts(eval(e,binding))
+                rescue => e
+                  puts "Oops error: #{e.message} \n #{e.backtrace.join('\n')}"
+                end
+              end
+            end
             BasicAI.start
           end
           self.frame += 1

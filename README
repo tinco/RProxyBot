@@ -1,11 +1,14 @@
 This is a client api for the Starcraft bot proxy found in the experimental branch of http://github.com/d-snp/bwapi-proxy 
 
-It is not complete yet and has no tests yet so it might not work without error.
+Warning: only tested on Ruby 1.9, 1.8.7 throws an error, if you find a fix let me know :)
 
-I now have a working stateless repl. You can run it by cd'ing to RProxyBot and then running: ruby proxybot.rb
+It is not complete yet and has no tests yet so it might not work without error. 
 
-Now you can do things like map.chokes or map.players[2].ally? or map.walkable?(20,23) or player.minerals
+I now have a working stateless repl. You can run it by cd'ing to RProxyBot and then running: ruby proxybot.rb, this will at the moment also run the basic_ai, which resides in basic_ai.rb and does nothing but send all workers to the minerals closest to the command_center.
 
-At the moment StarCraft will crash after this because I immediately close the socket. 
+In the REPL you can do things like map.chokes or map.players[2].ally? or map.walkable?(20,23) or player.minerals
 
 Please contribute. I appreciate tests in rspec or cucumber :)
+
+You can contact me per e-mail at: (mail) @ (tinco.nl)
+I am also in the #bwapi channel on quakenet with the handle d-snp

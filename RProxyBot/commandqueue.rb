@@ -20,7 +20,7 @@ class CommandQueue < Queue
       result << ":" + pop.to_s
       count += 1
     end
-    if count > 0 then puts result end
+    #if count > 0 then puts result end
     result
   end
 end
