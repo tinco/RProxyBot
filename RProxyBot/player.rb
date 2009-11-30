@@ -23,6 +23,12 @@ module RProxyBot
       end
     end
 
+    def larvae
+      units.values.select do |unit|
+        unit.type == Constants::UnitTypes::Larva
+      end
+    end	
+
 		def self.parse(data)
 			Util.multi_parse(data, 5, Player)
 		end

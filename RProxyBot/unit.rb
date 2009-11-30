@@ -24,11 +24,15 @@ module RProxyBot
 		end
 
     def right_click_unit(target)
-      CommandQueue.push(4, @id, target.id)
+      CommandQueue.push(Commands::RightClickUnit, @id, target.id)
     end
 
     def train_unit(unit_type)
-      CommandQueue.push(5, @id, unit_type)
+      CommandQueue.push(Commands::Train, @id, unit_type)
+    end
+
+    def morph_unit(unit_type)
+      CommandQueue.push(17, @id, unit_type)
     end
 
     def distance_to(unit)

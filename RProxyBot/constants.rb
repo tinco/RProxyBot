@@ -365,5 +365,49 @@ module RProxyBot
      AirSplash = 24
      Unknown = 25
     end
+
+    module Commands
+	   None = 0
+	   AttackMove = 1
+	   AttackUnit = 2
+	   RightClick = 3
+	   RightClickUnit = 4
+	   Train = 5
+	   Build = 6
+	   BuildAddon = 7
+	   Research = 8
+	   Upgrade = 9
+	   Stop = 10
+	   HoldPosition = 11
+	   Patrol = 12
+	   Follow = 13
+	   SetRallyPosition = 14
+	   SetRallyUnit = 15
+	   Repair = 16
+	   Morph = 17
+	   Burrow = 18
+	   Unburrow = 19
+	   Siege = 20
+	   Unsiege = 21
+	   Cloak = 22
+	   Decloak = 23
+	   Lift = 24
+	   Land = 25
+	   Load = 26
+	   Unload = 27
+	   UnloadAll = 28
+	   UnloadAllPosition = 29
+	   CancelConstruction = 30
+	   HaltConstruction = 31
+	   CancelMorph = 32
+	   CancelTrain = 33
+	   CancelTrainSlot = 34
+	   CancelAddon = 35
+	   CancelResearch = 36
+	   CancelUpgrade = 37
+	   UseTech = 38
+	   UseTechPosition = 39
+	   UseTechTarget = 40
+	   GameSpeed = 41
   end
 end
