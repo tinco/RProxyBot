@@ -32,7 +32,11 @@ module RProxyBot
     end
 
     def morph_unit(unit_type)
-      CommandQueue.push(17, @id, unit_type)
+      CommandQueue.push(Commands::Morph, @id, unit_type)
+    end
+
+    def build(type, x, y)
+      CommandQueue.push(Commands::Build, @id, x, y, type)
     end
 
     def distance_to(unit)
