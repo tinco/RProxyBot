@@ -27,7 +27,7 @@ module RProxyBot
             last_frame = starcraft.frame
 
             if (player.minerals > 50 &&
-                player.supply_total > player.supply_used &&
+                player.supply_total > player.supply_used
                 #center.train_timer == 0
                 ) then
               center.train_unit(UnitTypes::Probe)
