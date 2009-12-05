@@ -10,6 +10,8 @@ module RProxyBot
       result
     end
 
+
+
     def self.multi_parse(data,size, klass, hash=false)
       result = hash ? {} : []
       data.split(':').each do |d|
