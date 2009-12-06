@@ -10,8 +10,6 @@ module RProxyBot
       result
     end
 
-
-
     def self.multi_parse(data,size, klass, hash=false)
       result = hash ? {} : []
       data.split(':').each do |d|
@@ -35,34 +33,26 @@ module RProxyBot
   # This should be a module and merged with Type (and perhaps util :P)
   class BasicEntity
     def self.properties( *arr )
-      # 1. Set up accessors for each variable
-      arr.each do |name|
-        name = name.to_s
-        unless Util.is_a_question? name
-          attr_accessor name
-        else
-          define_method(name) do
-            instance_variable_get("@#{name.chop}")
-          end
-
-          define_method(name.chop + "=") do |value|
-            instance_variable_set("@#{name.chop}", value)
-          end
+      arr.each_with_index do |name, index|
+        define_method(name) do
+          @properties[index]
         end
       end
 
       # 2. For each entity, the `initialize' method
       #    should set the properties.
       class_eval do
+        t = 0
         define_method( :initialize_properties ) do |*args|
-          arr.each_with_index do |name, i|
-            value = args[i]
-            value = value.to_i if (value.length < 10) unless (value =~ /^\d+$/).nil?
-            name = name.to_s
-            if Util.is_a_question? name
-              name.chop! and value = value == 1
+          @properties ||= Array.new(100, 0)
+          args.each_with_index do |value, i|
+            if Util.is_a_question? arr[i]
+              value = value == '1'
+            elsif value.length < 15 
+              t = value.to_i
+              value = t unless t == 0 && value != '0'
             end
-            instance_variable_set("@#{name}", value)
+            @properties[i] = value
           end	
         end
       end
@@ -72,8 +62,9 @@ module RProxyBot
     def self.type_properties( *arr )
       arr.each_with_index do |name, index|
         class_eval do
+          include Constants
           define_method(name) do
-            result = RProxyBot::Constants.const_get("UnitTypes").const_get(:TypeData)[@type][index]
+            result = UnitTypes::TypeData[@properties[UnitProperties::TypeId]][index]
             result = (result == 1) if Util.is_a_question? name
             result
           end

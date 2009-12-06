@@ -32,19 +32,19 @@ module RProxyBot
       :is_neutral?, :is_refinery?
 
     def right_click_unit(target)
-      CommandQueue.push(Commands::RightClickUnit, @id, target.id)
+      CommandQueue.push(Commands::RightClickUnit, self.id, target.id)
     end
 
     def train_unit(unit_type)
-      CommandQueue.push(Commands::Train, @id, unit_type)
+      CommandQueue.push(Commands::Train, self.id, unit_type)
     end
 
     def morph_unit(unit_type)
-      CommandQueue.push(Commands::Morph, @id, unit_type)
+      CommandQueue.push(Commands::Morph, self.id, unit_type)
     end
 
     def build(type, x, y)
-      CommandQueue.push(Commands::Build, @id, x, y, type)
+      CommandQueue.push(Commands::Build, self.id, x, y, type)
     end
 
     def distance_to(unit)

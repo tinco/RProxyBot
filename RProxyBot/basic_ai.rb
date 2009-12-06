@@ -3,12 +3,10 @@ module RProxyBot
     include Constants
     def self.start
       Thread.new do
-        puts "basic ai started"
         starcraft = ProxyBot.instance
         player = starcraft.player
         workers = player.workers
         center = player.command_centers.first
-        puts "just before units call"
         minerals = starcraft.units.minerals.sort do |a, b|
           b.distance_to(center) <=> a.distance_to(center)
         end
@@ -21,7 +19,6 @@ module RProxyBot
                    #orders have been processed for the
                    #the loop (which starts immediately)
 
-        puts "entering main loop"
         last_frame = -1
         while(true)
           if(last_frame == starcraft.frame)
