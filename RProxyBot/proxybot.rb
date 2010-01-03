@@ -5,6 +5,7 @@ require 'singleton'
 require 'util.rb'
 require 'constants.rb'
 require 'typedata.rb'
+require 'game.rb'
 require 'player.rb'
 require 'locations.rb'
 require 'map.rb'
@@ -14,8 +15,6 @@ require 'choke.rb'
 require 'base.rb'
 require 'unit.rb'
 require 'commandqueue.rb'
-require 'repl_ai.rb'
-require 'basic_ai.rb'
 
 module RProxyBot
 	class ProxyBot
@@ -23,47 +22,43 @@ module RProxyBot
     attr_accessor :allow_user_control,
       :complete_information,
       :display_agent_commands,
-      :display_terrain_analysis
-
-		attr_accessor :player_id, :map, :player, :players, :unit_types,
-			:starting_locations, :units, :tech_types,
-			:upgrade_types, :command_queue, :max_commands_per_message, :frame,
-      :stopping
+      :display_terrain_analysis,
+      :command_queue, :frame, :stopping,
+      :game
 
 		def run(port, *settings)
-      @allow_user_control,
-      @complete_information,
-      @display_agent_commands,
-      @display_terrain_analysis,
-      @max_commands_per_message = settings
+      self.command_queue = CommandQueue.instance
 
-			run_server port
-			puts "Done running server!"
-		end
+      self.allow_user_control,
+      self.complete_information,
+      self.display_agent_commands,
+      self.display_terrain_analysis,
+      self.command_queue.max_commands = settings
 
-		def run_server(port)
 			server = TCPServer.new(port)
 
 			#We wait for a client to connect to us.
 			puts "Waiting for client"
 			socket = server.accept
 			puts "Client accepted."
+      self.game = Game.new
 
 			#The first thing it sends us is the player information:
 			ack, data = socket.gets.split(';', 2)
       puts "bot says: #{ack}"
       player_id, data = data.split(':', 2)
-      self.player_id = player_id.to_i
+
+      game.player_id = player_id.to_i
 
 			puts "player id is: #{player_id}"
 
 			parse_players(data)
 
 			#We reply that with our cheat flags
-			socket.puts(@allow_user_control +
-                  @complete_information +
-                  @display_agent_commands +
-                  @display_terrain_analysis)
+			socket.puts(self.allow_user_control +
+                  self.complete_information +
+                  self.display_agent_commands +
+                  self.display_terrain_analysis)
 
 			#It continues with sending us data.
 			parse_locations(socket.gets)
@@ -74,21 +69,19 @@ module RProxyBot
 			#parse_upgrade_types(socket.gets)
 			#parse_unit_types(socket.gets)
 
-      #TODO this is ugly, we're storing max_commands in two places, should only be CommandQueue
-      @command_queue = CommandQueue.instance
-      @command_queue.max_commands = @max_commands_per_message
-      @frame = 0
+      self.frame = 0
 
-      @stopping = false
-      while(not @stopping)
+      ai = BasicAI.new
+
+      self.stopping = false
+      while(not stopping)
         if parse_update(socket.gets)
-          #hier moeten we een thread maken die daarna
-          #coole dingen doet met de gamestate.
-          #Zoals een REPL:
-          if @frame == 0
+          #The following should be put in a file, possibly like a real AI
+          #REPL:
+          if frame == 0
             Thread.new do
-              puts "Welcome in the interactive AI:"
-              while (not @stopping)
+              puts "Welcome in the interactive starcraft interface:"
+              while (not stopping)
                 '> '.display
                 e = gets
                 begin
@@ -98,74 +91,95 @@ module RProxyBot
                 end
               end
             end
-            BasicAI.start
+            Thread.new do #AI Thread:
+              ai.start(game)
+              last_frame = self.frame
+              while (not stopping)
+                if last_frame < self.frame
+                  last_frame = self.frame
+                  ai.on_frame
+                else
+                  sleep 0.01 #is there a better way?
+                end
+              end
+            end
           end
-          @frame += 1
+          self.frame += 1
 
-          socket.puts @command_queue.fetch
+          socket.puts command_queue.fetch
         else
-          stopping = true
+          self.stopping = true
         end
       end
-
-      #we moeten ook de bot stoppen hier.
 
       #clean up after ourselves
       socket.close
       server.close
+
+      puts "Done running server!"
     end
+
+    #@update_mutex = Mutex.new
 
     def parse_update(data)
       if data.nil?
         false
       else
+        #we stoppen de data in een altijd beschikbare array
+        #daarna, als de workerthread klaar is voeren we hem de nieuwste array
+        #dit plan gaan we als volgt uitvoeren:
+        #parse_update krijgt een zootje data
+        #vraagt de lock aan op de nieuwe data array
+        #krijgt de lock, zet de data erin en geeft weer vrij
         player_data, units_data = data.split(':', 2)
+        #de hoi nieuwe frame nieuwe kansen thread besluit dat het tijd is voor een nieuwe frame <-- wat is de nieuwe frame nieuwe kansen thread?
+        #vraagt de lock aan op de nieuwe data array
+        #kopieert hem naar de current data array
         #update player
-        @player.update(player_data)
+        game.player.update(player_data)
         #update units
-        @units ||= Units.new
-        @units.update(units_data)
-        @players.each do |p|
-          p.update_units(@units[p.id]) unless @units[p.id].nil?
+        game.units ||= Units.new
+        game.units.update(units_data)
+        game.players.each do |p|
+          p.update_units(game.units[p.id]) unless game.units[p.id].nil?
         end
+        #geeft de lock weer vrij
+        #start het handlen van de nieuwe frame met de nieuwe current data.
         true
       end
     end
 
     def parse_players(data)
-			@players = Player.parse(data)
-      @player = @players[@player_id]
+      game.players = Player.parse(data)
+      game.player = game.players[game.player_id]
 		end
 
 		def parse_unit_types(data)
-			@unit_types = UnitType.parse(data)
+			game.unit_types = UnitType.parse(data)
 		end
 
 		def parse_locations(data)
-			@starting_locations = StartingLocation.parse(data)
+			game.starting_locations = StartingLocation.parse(data)
 		end
 
 		def parse_map(data)
-			@map = Map.parse(data)
+			game.map = Map.parse(data)
 		end
 
 		def parse_tech_types(data)
-			@tech_types = TechType.parse(data)
+			game.tech_types = TechType.parse(data)
 		end
 
 		def parse_upgrade_types(data)
-			@upgrade_types = UpgradeType.parse(data)
+			game.upgrade_types = UpgradeType.parse(data)
 		end
 
     def parse_chokes(data)
-      @map.chokes = Choke.parse(data)
+      game.map.chokes = Choke.parse(data)
     end
 
     def parse_base_locations(data)
-      @map.base_locations = BaseLocation.parse(data)
+      game.map.base_locations = BaseLocation.parse(data)
     end
 	end
 end
-
-p = RProxyBot::ProxyBot.instance
-p.run(12345,"1","1","1","1", 20)

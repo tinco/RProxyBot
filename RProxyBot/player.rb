@@ -29,6 +29,12 @@ module RProxyBot
       end
     end	
 
+    def get_all_by_unit_type(unittype)
+      units.values.select do |unit|
+        unit.type == unittype
+      end
+    end
+
 		def self.parse(data)
 			Util.multi_parse(data, 5, Player)
 		end

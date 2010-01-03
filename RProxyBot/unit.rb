@@ -31,6 +31,10 @@ module RProxyBot
       :is_two_units_in_one_egg?, :is_burrowable?, :is_cloakable?, :is_building?, :is_addon?, :is_flying_building?,
       :is_neutral?, :is_refinery?
 
+    def right_click(x,y)
+      CommandQueue.push(Commands::RightClick, self.id, x, y)
+    end  
+
     def right_click_unit(target)
       CommandQueue.push(Commands::RightClickUnit, self.id, target.id)
     end
