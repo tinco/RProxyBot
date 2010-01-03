@@ -26,7 +26,7 @@ module RProxyBot
       :command_queue, :frame, :stopping,
       :game
 
-		def run(port, *settings)
+		def run(port, *settings, ai)
       self.command_queue = CommandQueue.instance
 
       self.allow_user_control,
@@ -70,8 +70,6 @@ module RProxyBot
 			#parse_unit_types(socket.gets)
 
       self.frame = 0
-
-      ai = BasicAI.new
 
       self.stopping = false
       while(not stopping)

@@ -40,4 +40,4 @@ module RProxyBot
 end
 
 p = RProxyBot::ProxyBot.instance
-p.run(12345,"1","1","1","1", 20)
+p.run(12345,"1","1","1","1", 20, RProxyBot::BasicAI.new)
