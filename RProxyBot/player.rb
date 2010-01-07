@@ -35,9 +35,33 @@ module RProxyBot
       end
     end
 
-		def self.parse(data)
-			Util.multi_parse(data, 5, Player)
-		end
+    def workerIds
+      units.id.select do |unit|
+        unit.is_worker?
+      end
+    end
+
+    def overlords
+      units.values.select do |unit|
+        unit.type == Constants::UnitTypes::Overlord
+      end
+    end
+
+    def larvae
+      units.values.select do |unit|
+        unit.type == Constants::UnitTypes::Larva
+      end
+    end
+
+    def eggs
+      units.values.select do |unit|
+        unit.type == Constants::UnitTypes::Egg
+      end
+    end
+
+    def self.parse(data)
+      Util.multi_parse(data, 5, Player)
+    end
 
     #This is called every frame, updating the players current status.
     def update(data)
