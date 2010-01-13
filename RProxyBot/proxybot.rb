@@ -1,3 +1,4 @@
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__))))
 ## Standard Library requires
 require 'socket'
 require 'singleton'
@@ -23,17 +24,17 @@ module RProxyBot
       :complete_information,
       :display_agent_commands,
       :display_terrain_analysis,
-      :command_queue, :frame, :stopping,
-      :game
+      :frame, :stopping, :game
 
 		def run(port, *settings, ai)
-      self.command_queue = CommandQueue.instance
+      @game = Game.new
+      @game.command_queue = CommandQueue.instance
 
-      self.allow_user_control,
-      self.complete_information,
-      self.display_agent_commands,
-      self.display_terrain_analysis,
-      self.command_queue.max_commands = settings
+      @allow_user_control,
+      @complete_information,
+      @display_agent_commands,
+      @display_terrain_analysis,
+      @game.command_queue.max_commands = settings
 
 			server = TCPServer.new(port)
 
@@ -41,7 +42,6 @@ module RProxyBot
 			puts "Waiting for client"
 			socket = server.accept
 			puts "Client accepted."
-      self.game = Game.new
 
 			#The first thing it sends us is the player information:
 			ack, data = socket.gets.split(';', 2)
@@ -90,21 +90,31 @@ module RProxyBot
               end
             end
             Thread.new do #AI Thread:
-              ai.start(game)
+              begin #TODO: this should only be a begin..rescue in debug mode
+                ai.start(game)
+              rescue Exception => e 
+                puts e.message
+              end
+
               last_frame = self.frame
               while (not stopping)
                 if last_frame < self.frame
                   last_frame = self.frame
-                  ai.on_frame
+                  begin
+                    ai.on_frame
+                  rescue Exception => e
+                    puts e.message
+                  end
                 else
                   sleep 0.01 #is there a better way?
+                             #something with a threadpool...
                 end
               end
             end
           end
           self.frame += 1
 
-          socket.puts command_queue.fetch
+          socket.puts game.command_queue.fetch
         else
           self.stopping = true
         end
