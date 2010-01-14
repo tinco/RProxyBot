@@ -57,7 +57,6 @@ module RProxyBot
       c = Math.sqrt(a ** 2 + b ** 2)
     end
 
-
     def self.mineral_cost(unittype)
       UnitTypes::TypeData[unittype][21]
     end

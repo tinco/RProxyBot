@@ -93,7 +93,11 @@ module RProxyBot
               begin #TODO: this should only be a begin..rescue in debug mode
                 ai.start(game)
               rescue Exception => e 
+                puts "------------------"
                 puts e.message
+                puts e.backtrace
+                puts "------------------"
+                stopping = true
               end
 
               last_frame = self.frame
@@ -103,7 +107,11 @@ module RProxyBot
                   begin
                     ai.on_frame
                   rescue Exception => e
+                    puts "------------------"
                     puts e.message
+                    puts e.backtrace
+                    puts "------------------"
+                    stopping = true
                   end
                 else
                   sleep 0.01 #is there a better way?
