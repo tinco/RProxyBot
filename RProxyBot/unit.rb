@@ -32,7 +32,7 @@ module RProxyBot
       :is_neutral?, :is_refinery?
 
     def right_click(x,y)
-      CommandQueue.push(Commands::RightClick, self.id, x, y)
+      CommandQueue.push(Commands::RightClick, self.id, x.build_tiles, y.build_tiles)
     end  
 
     def right_click_unit(target)
@@ -48,7 +48,7 @@ module RProxyBot
     end
 
     def build(type, x, y)
-      CommandQueue.push(Commands::Build, self.id, x, y, type)
+      CommandQueue.push(Commands::Build, self.id, x.in_build_tiles, y.in_build_tiles, type)
     end
 
     def distance_to(unit)
