@@ -32,7 +32,7 @@ module RProxyBot
       :is_neutral?, :is_refinery?
 
     def right_click(x,y)
-      CommandQueue.push(Commands::RightClick, self.id, x.build_tiles, y.build_tiles)
+      CommandQueue.push(Commands::RightClick, self.id, x * 32, y * 32)
     end  
 
     def right_click_unit(target)
