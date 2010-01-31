@@ -73,7 +73,15 @@ module RProxyBot
 
       self.stopping = false
       while(not stopping)
-        if parse_update(socket.gets)
+        data = socket.gets
+
+        if frame % 5 != 0
+          self.frame += 1 
+          socket.puts game.command_queue.fetch          
+          next
+        end
+        
+        if parse_update(data)
           #The following should be put in a file, possibly like a real AI
           #REPL:
           if frame == 0

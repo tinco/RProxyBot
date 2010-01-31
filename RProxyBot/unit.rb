@@ -85,7 +85,7 @@ module RProxyBot
     def update(data)
       @units ||= {}
       id = 0
-      data.split(':').each do |u|
+      data.each_line(':') do |u|
         id = u.to_i #ha!
         if @units.has_key? id
           @units[id].initialize_properties(*(u.split(';')))
