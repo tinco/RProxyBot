@@ -66,7 +66,17 @@ module RProxyBot
     end
   end
 
+  #TODO this class is rather inconsistent
   class Units
+    include Enumerable
+
+    #iterate over units
+    def each(&block)
+      @units.values.each do |unit|
+        yield unit
+      end
+    end
+
     attr_accessor :players
     @units
 
