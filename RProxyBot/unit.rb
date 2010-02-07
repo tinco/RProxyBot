@@ -64,6 +64,10 @@ module RProxyBot
     def self.gas_cost(unittype)
       UnitTypes::TypeData[unittype][22]
     end
+
+    def self.supply_required(unittype)
+      UnitTypes::TypeData[unittype][24]
+    end
   end
 
   #TODO this class is rather inconsistent
