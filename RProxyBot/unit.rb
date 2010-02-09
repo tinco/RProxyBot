@@ -68,6 +68,14 @@ module RProxyBot
     def self.supply_required(unittype)
       UnitTypes::TypeData[unittype][24]
     end
+
+    def self.tile_width(unittype)
+      UnitTypes::TypeData[unittype][31]
+    end
+
+    def self.tile_height(unittype)
+      UnitTypes::TypeData[unittype][32]
+    end
   end
 
   #TODO this class is rather inconsistent
