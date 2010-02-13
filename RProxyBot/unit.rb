@@ -16,7 +16,7 @@ module RProxyBot
       :is_loaded?, :is_locked_down?, :is_maelstrommed?, :is_morphing?, :is_moving?, :is_parasited, :is_patrolling?,
       :is_plagued?, :is_repairing?, :is_researching?, :is_selected?, :is_sieged?, :is_starting_attack?,
       :is_stasised?, :is_stimmed?, :is_training?, :is_under_storm?, :is_unpowered?, :is_upgrading?, :is_visible?,
-      :tile_position_x, :build_tile_position_y
+      :tile_position_x, :tile_position_y
 
       type_properties :name, :rank, :race, :what_builds, :what_builds_amount, :required_unit1,
       :required_unit1_amount, :required_unit2, :required_unit2_amount, :required_unit3, :required_unit3_amount,
@@ -32,7 +32,7 @@ module RProxyBot
       :is_neutral?, :is_refinery?
 
     def right_click(x,y)
-      CommandQueue.push(Commands::RightClick, self.id, x * 32, y * 32)
+      CommandQueue.push(Commands::RightClick, self.id, x, y)
     end  
 
     def right_click_unit(target)
@@ -48,7 +48,7 @@ module RProxyBot
     end
 
     def build(type, x, y)
-      CommandQueue.push(Commands::Build, self.id, x.in_build_tiles, y.in_build_tiles, type)
+      CommandQueue.push(Commands::Build, self.id, x, y, type)
     end
 
     def distance_to(unit)
