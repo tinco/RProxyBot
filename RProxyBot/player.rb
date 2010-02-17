@@ -69,8 +69,8 @@ module RProxyBot
       @status = u.status
       @minerals = u.minerals
       @gas = u.gas
-      @supply_used = u.supply_used / 2
-      @supply_total = u.supply_total / 2
+      @supply_used = u.supply_used
+      @supply_total = u.supply_total
 
       unless u.research_data.nil?
         u.research_data.chars.each_with_index do |status, index|
