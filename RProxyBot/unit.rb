@@ -76,6 +76,10 @@ module RProxyBot
     def self.tile_height(unittype)
       UnitTypes::TypeData[unittype][32]
     end
+
+    def self.name(unittype)
+      UnitTypes::TypeData[unittype][0]
+    end
   end
 
   #TODO this class is rather inconsistent
