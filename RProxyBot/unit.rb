@@ -10,7 +10,7 @@ module RProxyBot
       :irradiate_timer, :lockdown_timer, :maelstrom_timer, :plague_timer, :remove_timer,
       :stasis_timer, :stim_timer, :angle, :interceptor_count, :scarab_count, :spider_mine_count,
       :exists, :is_accelerating?, :is_being_constructed, #:is_being_gathered?,
-      :is_being_healed?, :is_blind?, :is_braking?, :is_burrowed?,:isCarryingGas, :is_carrying_minerals?,
+      :is_being_healed?, :is_blind?, :is_braking?, :is_burrowed?, :is_carrying_gas?, :is_carrying_minerals?,
       :is_cloaked?, :is_completed?, :is_constructing?, :is_defense_matrixed?, :is_ensnared?, :is_following?,
       :is_gathering_gas?, :is_gathering_minerals?, :is_hallucination?, :is_idle?, :is_irradiated?, :is_lifted?,
       :is_loaded?, :is_locked_down?, :is_maelstrommed?, :is_morphing?, :is_moving?, :is_parasited, :is_patrolling?,
@@ -51,6 +51,10 @@ module RProxyBot
       CommandQueue.push(Commands::Build, self.id, x, y, type)
     end
 
+    def attack_move(x,y)
+      CommandQueue.push(Commands::AttackMove, self.id, x, y)
+    end
+
     def distance_to(unit)
       a = (unit.x - self.x).abs
       b = (unit.y - self.y).abs
@@ -79,6 +83,14 @@ module RProxyBot
 
     def self.name(unittype)
       UnitTypes::TypeData[unittype][0]
+    end
+
+    def dead?
+      @dead
+    end
+
+    def dead!
+      @dead = true
     end
   end
 
@@ -111,8 +123,10 @@ module RProxyBot
     def update(data)
       @units ||= {}
       id = 0
+      ids = []
       data.each_line(':') do |u|
         id = u.to_i #ha!
+        ids << id
         if @units.has_key? id
           @units[id].initialize_properties(*(u.split(';')))
         else
@@ -123,6 +137,9 @@ module RProxyBot
           @players[unit.player_id] ||= {}
           @players[unit.player_id][unit.id] = unit
         end
+      end
+      (@units.keys - ids).each do |unit|
+        @units[unit].dead! #make sure its dead.
       end
     end
 

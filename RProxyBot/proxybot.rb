@@ -164,7 +164,7 @@ module RProxyBot
         #update units
         game.units ||= Units.new
         game.units.update(units_data)
-        game.players.each do |p|
+        game.players.values.each do |p|
           p.update_units(game.units[p.id]) unless game.units[p.id].nil?
         end
         #geeft de lock weer vrij

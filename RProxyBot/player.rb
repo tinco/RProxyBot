@@ -60,7 +60,7 @@ module RProxyBot
     end
 
     def self.parse(data)
-      Util.multi_parse(data, 5, Player)
+      Util.multi_parse(data, 5, Player, true)
     end
 
     #This is called every frame, updating the players current status.
