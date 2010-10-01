@@ -3,46 +3,42 @@ require './proxybot'
 module RProxyBot
   class BasicAI
     include Constants
-    def self.start
-      Thread.new do
-        starcraft = ProxyBot.instance
-        player = starcraft.player
-        workers = player.workers
-        center = player.command_centers.first
-        minerals = starcraft.units.minerals.sort do |a, b|
-          b.distance_to(center) <=> a.distance_to(center)
-        end
-        workers.each do |w|
-          w.right_click_unit(minerals.pop)
-        end
 
-        center.train_unit(UnitTypes::Probe)
-        sleep(0.5) #We wait a few frames to make sure the
-                   #orders have been processed for the
-                   #the loop (which starts immediately)
+    attr_accessor :starcraft
 
-        last_frame = -1
-        while(true)
-          if(last_frame == starcraft.frame)
-            sleep(0.01)
-          else
-            last_frame = starcraft.frame
+    attr_accessor :player, :center, :minerals
 
-            if (player.minerals > 50 &&
-                player.supply_total > player.supply_used
-                #center.train_timer == 0
-                ) then
-              center.train_unit(UnitTypes::Probe)
-            end
+    def start(game)
+      self.starcraft = game
+      self.player = starcraft.player
+      self.center = player.command_centers.first
+      workers = player.workers
 
-            player.workers.each do |worker|
-              if worker.order == Orders::PlayerGuard
-                worker.right_click_unit(minerals.pop)
-              end
-            end
-          end
-        end
+      #sort the minerals by their distance to the nexus
+      self.minerals = starcraft.units.minerals.sort do |a, b|
+        b.distance_to(center) <=> a.distance_to(center)
       end
-    end
+
+      #send every worker to a mineral spot
+      workers.each do |w|
+        w.right_click_unit(minerals.pop)
+      end
+
+      #train one protoss probe
+      center.train_unit(UnitTypes::Probe)
+    end #start
+
+    def on_frame
+      #Build a protoss probe if we have 50 minerals and enough supply
+      if (player.minerals > 50 &&
+          player.supply_total > player.supply_used
+         ) then
+         center.train_unit(UnitTypes::Probe)
+      end
+      sleep 0.5
+    end #on_frame
   end
 end
+
+p = RProxyBot::ProxyBot.instance
+p.run(12345,"1","1","1","1", 20, RProxyBot::BasicAI.new)

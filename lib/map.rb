@@ -15,7 +15,6 @@ module RProxyBot
     end
 
     def buildable?(x,y)
-      #is in build_data per build tile of 32x32
       build_x = x
       build_y = y
       pos = (self.width * build_x) + build_y

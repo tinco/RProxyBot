@@ -8,7 +8,6 @@ class CommandQueue < Queue
     super(command.join(';'))
   end
 
-  #Is this how singleton works?
   def self.push(*command)
     instance.push(*command)
   end

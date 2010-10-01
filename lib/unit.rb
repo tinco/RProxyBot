@@ -10,13 +10,13 @@ module RProxyBot
       :irradiate_timer, :lockdown_timer, :maelstrom_timer, :plague_timer, :remove_timer,
       :stasis_timer, :stim_timer, :angle, :interceptor_count, :scarab_count, :spider_mine_count,
       :exists, :is_accelerating?, :is_being_constructed, #:is_being_gathered?,
-      :is_being_healed?, :is_blind?, :is_braking?, :is_burrowed?,:isCarryingGas, :is_carrying_minerals?,
+      :is_being_healed?, :is_blind?, :is_braking?, :is_burrowed?, :is_carrying_gas?, :is_carrying_minerals?,
       :is_cloaked?, :is_completed?, :is_constructing?, :is_defense_matrixed?, :is_ensnared?, :is_following?,
       :is_gathering_gas?, :is_gathering_minerals?, :is_hallucination?, :is_idle?, :is_irradiated?, :is_lifted?,
       :is_loaded?, :is_locked_down?, :is_maelstrommed?, :is_morphing?, :is_moving?, :is_parasited, :is_patrolling?,
       :is_plagued?, :is_repairing?, :is_researching?, :is_selected?, :is_sieged?, :is_starting_attack?,
       :is_stasised?, :is_stimmed?, :is_training?, :is_under_storm?, :is_unpowered?, :is_upgrading?, :is_visible?,
-      :tile_position_x, :build_tile_position_y
+      :tile_position_x, :tile_position_y
 
       type_properties :name, :rank, :race, :what_builds, :what_builds_amount, :required_unit1,
       :required_unit1_amount, :required_unit2, :required_unit2_amount, :required_unit3, :required_unit3_amount,
@@ -30,6 +30,10 @@ module RProxyBot
       :is_detector?, :is_resource_container?, :is_resource_depot?, :is_worker?, :requires_psi?, :requires_creep?,
       :is_two_units_in_one_egg?, :is_burrowable?, :is_cloakable?, :is_building?, :is_addon?, :is_flying_building?,
       :is_neutral?, :is_refinery?
+
+    def right_click(x,y)
+      CommandQueue.push(Commands::RightClick, self.id, x, y)
+    end  
 
     def right_click_unit(target)
       CommandQueue.push(Commands::RightClickUnit, self.id, target.id)
@@ -47,14 +51,60 @@ module RProxyBot
       CommandQueue.push(Commands::Build, self.id, x, y, type)
     end
 
+    def attack_move(x,y)
+      CommandQueue.push(Commands::AttackMove, self.id, x, y)
+    end
+
     def distance_to(unit)
       a = (unit.x - self.x).abs
       b = (unit.y - self.y).abs
       c = Math.sqrt(a ** 2 + b ** 2)
     end
+
+    def self.mineral_cost(unittype)
+      UnitTypes::TypeData[unittype][21]
+    end
+
+    def self.gas_cost(unittype)
+      UnitTypes::TypeData[unittype][22]
+    end
+
+    def self.supply_required(unittype)
+      UnitTypes::TypeData[unittype][24]
+    end
+
+    def self.tile_width(unittype)
+      UnitTypes::TypeData[unittype][31]
+    end
+
+    def self.tile_height(unittype)
+      UnitTypes::TypeData[unittype][32]
+    end
+
+    def self.name(unittype)
+      UnitTypes::TypeData[unittype][0]
+    end
+
+    def dead?
+      @dead
+    end
+
+    def dead!
+      @dead = true
+    end
   end
 
+  #TODO this class is rather inconsistent
   class Units
+    include Enumerable
+
+    #iterate over units
+    def each(&block)
+      @units.values.each do |unit|
+        yield unit
+      end
+    end
+
     attr_accessor :players
     @units
 
@@ -73,8 +123,10 @@ module RProxyBot
     def update(data)
       @units ||= {}
       id = 0
-      data.split(':').each do |u|
+      ids = []
+      data.each_line(':') do |u|
         id = u.to_i #ha!
+        ids << id
         if @units.has_key? id
           @units[id].initialize_properties(*(u.split(';')))
         else
@@ -85,6 +137,9 @@ module RProxyBot
           @players[unit.player_id] ||= {}
           @players[unit.player_id][unit.id] = unit
         end
+      end
+      (@units.keys - ids).each do |unit|
+        @units[unit].dead! #make sure its dead.
       end
     end
 

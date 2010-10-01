@@ -1,3 +1,5 @@
+require './proxybot'
+
 module RProxyBot
   class REPL
     attr_accessor :temp
