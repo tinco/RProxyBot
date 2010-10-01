@@ -1,3 +1,5 @@
+require './proxybot'
+
 module RProxyBot
   class BasicAI
     include Constants

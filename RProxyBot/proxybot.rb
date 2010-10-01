@@ -1,22 +1,3 @@
-## Standard Library requires
-require 'socket'
-require 'singleton'
-## RProxybot requires
-require 'util.rb'
-require 'constants.rb'
-require 'typedata.rb'
-require 'player.rb'
-require 'locations.rb'
-require 'map.rb'
-require 'techtype.rb'
-require 'upgrade_type.rb'
-require 'choke.rb'
-require 'base.rb'
-require 'unit.rb'
-require 'commandqueue.rb'
-require 'repl_ai.rb'
-require 'basic_ai.rb'
-
 module RProxyBot
 	class ProxyBot
     include Singleton
