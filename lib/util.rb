@@ -32,6 +32,7 @@ module RProxyBot
   # modified to fit the mood.
   # This should be a module and merged with Type (and perhaps util :P)
   class BasicEntity
+    include Constants
     def self.properties( *arr )
       arr.each_with_index do |name, index|
         define_method(name) do
@@ -62,9 +63,8 @@ module RProxyBot
     def self.type_properties( *arr )
       arr.each_with_index do |name, index|
         class_eval do
-          include Constants
           define_method(name) do
-            result = UnitTypes::TypeData[@properties[UnitProperties::TypeId]][index]
+            result = Constants::UnitTypes::TypeData[@properties[Constants::UnitProperties::TypeId]][index]
             result = (result == 1) if Util.is_a_question? name
             result
           end
