@@ -32,6 +32,7 @@ module RProxyBot
   # modified to fit the mood.
   # This should be a module and merged with Type (and perhaps util :P)
   class BasicEntity
+    include Constants
     def self.properties( *arr )
       arr.each_with_index do |name, index|
         define_method(name) do
